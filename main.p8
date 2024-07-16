@@ -3,14 +3,15 @@ version 42
 __lua__
 #include snake.lua
 #include vector.lua
+#include test.lua
 
 -- main.p8
 
 function _init()
     printh(" ")
+    run_tests()
 
-    -- snake = Snake.new(100, 64, 40, 2)
-    snake = Snake.new(100, 64, 160, 1)
+    snake = Snake.new(100, 64, 160, 1, 0.45)
     snake_girth = 3
     snake_lines = snake:get_outer_lines(3)
 end

@@ -1,7 +1,7 @@
 -- snake.lua
 
 Snake = {
-    new = function(head_x, head_y, length, gap_size) 
+    new = function(head_x, head_y, length, gap_size, min_angle) 
         -- generate points
 
         local head = {head_x, head_y}
@@ -18,6 +18,7 @@ Snake = {
         local obj = {
             points = points,
             gap_size = gap_size,
+            min_angle = min_angle,
         }
         
         setmetatable(obj, { __index = function(table, key)
@@ -29,13 +30,20 @@ Snake = {
     
 
     constrain = function(self)
-        local prev = nil
+        local prev = self.points[1]
         
-        for curr in all(self.points) do
-            if prev != nil then
-                local end_p = scale_points_distance(prev, curr, self.gap_size)
-                curr[1] = end_p[1]
-                curr[2] = end_p[2]
+        for i=2, #self.points do
+            local curr = self.points[i]
+            local next = self.points[i + 1]
+            
+            -- constrain distance
+            constrain_point(curr, prev, self.gap_size)
+            
+            -- constrain angle
+            if next != nil then
+                local new_next = ensure_min_angle(curr, prev, next, self.min_angle)
+                next[1] = new_next[1]
+                next[2] = new_next[2]
             end
 
             prev = curr
@@ -96,3 +104,10 @@ Snake = {
         -- end
     end
 }
+
+
+function constrain_point(point, prev, distance)
+    local new_point = scale_points_distance(prev, point, distance)
+    point[1] = new_point[1]
+    point[2] = new_point[2]
+end

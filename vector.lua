@@ -53,3 +53,44 @@ function get_rotated_points(center_p, edge_p, size)
     
     return {left_x, left_y}, {right_x, right_y}
 end
+
+
+-- returns angle1 if plane was rotated so that angle2 was 0 degrees
+function subtract_angle(angle1, angle2)
+    local difference = angle1 - angle2
+    if difference < 0 then
+        difference += 1
+    end
+    
+    return difference
+end
+
+
+function add_angle(angle1, angle2)
+    local sum = angle1 + angle2
+    if sum > 1 then
+        sum -= 1
+    end
+    
+    return sum
+end
+
+
+-- ensures that angle between the points is not less than min_angle
+-- returns new value for point2 (point1 doesn't move)
+function ensure_min_angle(center, point1, point2, min_angle)
+    local magnitude1, angle1 = get_magnitude_and_direction(center, point1)
+    local magnitude2, angle2 = get_magnitude_and_direction(center, point2)
+    
+    local angle_between = subtract_angle(angle2, angle1)
+
+    if angle_between < min_angle then
+        angle_between = min_angle
+    elseif angle_between > 1 - min_angle then
+        angle_between = 1 - min_angle
+    end
+    
+    local new_angle = add_angle(angle_between, angle1)
+    local new_point = get_end_point_from_vector(center, magnitude2, new_angle)
+    return new_point
+end
