@@ -9,24 +9,37 @@ __lua__
 function _init()
     printh(" ")
 
-    snake = Snake.new(100, 64, 40, 2)
+    -- snake = Snake.new(100, 64, 40, 2)
+    snake = Snake.new(100, 64, 160, 1)
     snake_girth = 3
     snake_lines = snake:get_outer_lines(3)
 end
 
 
 function _update()
+    local x_move = 0
+    local y_move = 0
+
     if btn(⬅️) then
-        snake.points[1][1] -= 1
+        x_move = -1
     elseif btn(➡️) then
-        snake.points[1][1] += 1
+        x_move = 1
     end
 
     if btn(⬆️) then
-        snake.points[1][2] -= 1
+        y_move = -1
     elseif btn(⬇️) then
-        snake.points[1][2] += 1
+        y_move = 1
     end
+    
+    -- constrain speed if moving diagonally
+    if x_move != 0 and y_move != 0 then
+        x_move = 0.7 * x_move
+        y_move = 0.7 * y_move
+    end
+    
+    snake.points[1][1] += x_move
+    snake.points[1][2] += y_move
     
     snake:constrain()
     snake_lines = snake:get_outer_lines(3)
