@@ -30,29 +30,56 @@ Snake = {
 
     constrain = function(self)
         local prev = nil
-        printh("A")
         
         for curr in all(self.points) do
             if prev != nil then
-                local magnitude, direction = get_magnitude_and_direction(
-                    prev,
-                    curr
-                )
-                
-                magnitude = self.gap_size
-                printh(curr[1].." "..curr[2])
-                local end_p = get_end_point_from_vector(
-                    prev,
-                    magnitude,
-                    direction
-                )
+                local end_p = scale_points_distance(prev, curr, self.gap_size)
                 curr[1] = end_p[1]
                 curr[2] = end_p[2]
-                printh(curr[1].." "..curr[2])
             end
 
             prev = curr
         end
+    end,
+    
+
+    get_outer_lines = function(self, girth)
+        local rotated_points = {}
+
+        local prev = self.points[1]
+
+        -- for all points except head and tail
+        for i=2, #self.points - 1 do
+            local curr = self.points[i]
+            add(rotated_points, pack(get_rotated_points(curr, prev, girth)))
+            prev = curr
+        end
+        
+        local outer_lines = {}
+
+        -- go around left edge first
+        prev = self.points[1] -- head
+        for point in all(rotated_points) do
+            local curr = point[1]
+            add(outer_lines, {prev, curr})
+            prev = curr
+        end
+        
+        -- add tail
+        add(outer_lines, {prev, self.points[#self.points]})
+        prev = self.points[#self.points]
+        
+        -- go around right edge in opposite direction
+        for i=#rotated_points, 1, -1 do
+            local curr = rotated_points[i][2]
+            add(outer_lines, {prev, curr})
+            prev = curr
+        end
+        
+        -- connect back to head
+        add(outer_lines, {prev, self.points[1]})
+        
+        return outer_lines
     end,
     
 

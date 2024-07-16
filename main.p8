@@ -7,7 +7,11 @@ __lua__
 -- main.p8
 
 function _init()
-    snake = Snake.new(100, 64, 40, 5)
+    printh(" ")
+
+    snake = Snake.new(100, 64, 40, 2)
+    snake_girth = 3
+    snake_lines = snake:get_outer_lines(3)
 end
 
 
@@ -25,13 +29,16 @@ function _update()
     end
     
     snake:constrain()
+    snake_lines = snake:get_outer_lines(3)
 end
 
 
 function _draw()
     cls()
     
-    snake:draw()
+    for curr_line in all(snake_lines) do
+        line(curr_line[1][1], curr_line[1][2], curr_line[2][1], curr_line[2][2], 7)
+    end
 end
 
 __gfx__
